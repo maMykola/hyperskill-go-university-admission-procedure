@@ -11,6 +11,12 @@ func main() {
 		sum += num
 	}
 
-	fmt.Println(float64(sum) / 3)
-	fmt.Println("Congratulations, you are accepted!")
+	var score = float64(sum) / 3
+	fmt.Println(score)
+
+	if score >= 60 {
+		fmt.Println("Congratulations, you are accepted!")
+	} else {
+		fmt.Println("We regret to inform you that we will not be able to offer you admission.")
+	}
 }
