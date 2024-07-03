@@ -27,6 +27,7 @@ const (
 	chemistry
 	math
 	computerScience
+	admission
 )
 
 type Applicant struct {
@@ -41,20 +42,24 @@ func (p *Person) Fullname() string {
 }
 
 func (a *Applicant) GetScore(dep Department) float64 {
+	var score float64
+
 	switch dep {
 	case "Physics":
-		return (a.ExamScores[physics] + a.ExamScores[math]) / 2
+		score = (a.ExamScores[physics] + a.ExamScores[math]) / 2
 	case "Chemistry":
-		return a.ExamScores[chemistry]
+		score = a.ExamScores[chemistry]
 	case "Mathematics":
-		return a.ExamScores[math]
+		score = a.ExamScores[math]
 	case "Engineering":
-		return (a.ExamScores[computerScience] + a.ExamScores[math]) / 2
+		score = (a.ExamScores[computerScience] + a.ExamScores[math]) / 2
 	case "Biotech":
-		return (a.ExamScores[chemistry] + a.ExamScores[physics]) / 2
+		score = (a.ExamScores[chemistry] + a.ExamScores[physics]) / 2
 	default:
 		panic("Unknown department")
 	}
+
+	return max(score, a.ExamScores[admission])
 }
 
 func main() {
@@ -99,7 +104,7 @@ func loadInfo() (applicants []Applicant) {
 }
 
 func getApplicant(s []string) (applicant Applicant, err error) {
-	if len(s) != 9 {
+	if len(s) != 10 {
 		err = errors.New("Invalid line")
 		return
 	}
@@ -111,10 +116,11 @@ func getApplicant(s []string) (applicant Applicant, err error) {
 	applicant.ExamScores[chemistry], _ = strconv.ParseFloat(s[3], 64)
 	applicant.ExamScores[math], _ = strconv.ParseFloat(s[4], 64)
 	applicant.ExamScores[computerScience], _ = strconv.ParseFloat(s[5], 64)
+	applicant.ExamScores[admission], _ = strconv.ParseFloat(s[6], 64)
 	applicant.Deps = make([]Department, 0, 3)
-	applicant.Deps = append(applicant.Deps, Department(s[6]))
 	applicant.Deps = append(applicant.Deps, Department(s[7]))
 	applicant.Deps = append(applicant.Deps, Department(s[8]))
+	applicant.Deps = append(applicant.Deps, Department(s[9]))
 
 	gpa := applicant.ExamScores[physics]
 	gpa += applicant.ExamScores[chemistry]
