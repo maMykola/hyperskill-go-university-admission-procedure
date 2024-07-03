@@ -43,13 +43,15 @@ func (p *Person) Fullname() string {
 func (a *Applicant) GetScore(dep Department) float64 {
 	switch dep {
 	case "Physics":
-		return a.ExamScores[physics]
-	case "Chemistry", "Biotech":
+		return (a.ExamScores[physics] + a.ExamScores[math]) / 2
+	case "Chemistry":
 		return a.ExamScores[chemistry]
 	case "Mathematics":
 		return a.ExamScores[math]
 	case "Engineering":
-		return a.ExamScores[computerScience]
+		return (a.ExamScores[computerScience] + a.ExamScores[math]) / 2
+	case "Biotech":
+		return (a.ExamScores[chemistry] + a.ExamScores[physics]) / 2
 	default:
 		panic("Unknown department")
 	}
@@ -66,11 +68,14 @@ func main() {
 
 	// display result
 	for _, department := range departments {
-		fmt.Println(department)
-		for _, applicant := range applicantsByDepartment[department] {
-			fmt.Printf("%s %.2f\n", applicant.Fullname(), applicant.GetScore(department))
+		file, err := os.Create(strings.ToLower(string(department)) + ".txt")
+		if err != nil {
+			log.Fatal(err)
 		}
-		fmt.Println()
+		for _, applicant := range applicantsByDepartment[department] {
+			fmt.Fprintf(file, "%s %.2f\n", applicant.Fullname(), applicant.GetScore(department))
+		}
+		file.Close()
 	}
 }
 
